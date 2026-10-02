@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Audit Desk – Landing Page Conversion Audit</title>
+<meta name="description" content="Heuristic landing page conversion audit tool with URL analysis, manual audit mode and client-ready reports.">
+<style>
+:root{--bg:#080b1a;--p:#0f1428;--p2:#161c38;--b:#262e56;--t:#e9ebf8;--m:#98a1c8;--v:#8b5cf6;--v2:#6d3df0;--r:#fb4d6d;--a:#f6b73c;--g:#36d399}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(900px 480px at 12% -8%,#2b1b66 0,transparent 60%),var(--bg);color:var(--t);font:16px/1.55 Inter,"Segoe UI",system-ui,-apple-system,sans-serif;overflow-x:hidden}
+[hidden]{display:none!important}
+h1,h2,h3{letter-spacing:-.02em;line-height:1.2;margin:0}
+p{margin:0}
+.wrap{max-width:1100px;margin:0 auto;padding:0 18px}
+.top{border-bottom:1px solid var(--b);background:rgba(8,11,26,.88);backdrop-filter:blur(8px);position:sticky;top:0;z-index:5}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;gap:9px;align-items:center;font-weight:700;color:var(--t);text-decoration:none}
+nav{display:flex;gap:2px;flex-wrap:wrap}
+nav button{background:none;border:0;color:var(--m);min-height:44px;padding:0 12px;cursor:pointer;border-radius:8px}
+nav button[aria-current=true]{color:#fff;background:var(--p2)}
+button,select,input,textarea{font:inherit;color:inherit}
+.btn{min-height:44px;padding:0 18px;border-radius:10px;border:1px solid var(--b);background:var(--p2);cursor:pointer;font-weight:600}
+.btn.pri{background:linear-gradient(135deg,var(--v),var(--v2));border-color:transparent;color:#fff}
+.btn:disabled{opacity:.6;cursor:wait}
+:focus-visible{outline:2px solid #c4b5fd;outline-offset:2px}
+.view{padding:34px 0 60px}
+.card{background:linear-gradient(180deg,var(--p2),var(--p));border:1px solid var(--b);border-radius:14px;padding:18px;min-width:0}
+.mut{color:var(--m)}
+.hero{padding:26px 0 8px;max-width:760px}
+.hero h1{font-size:clamp(2rem,6vw,3.2rem);margin-bottom:14px}
+.hero p{color:var(--m);font-size:1.08rem}
+.urlrow{display:flex;gap:10px;margin:24px 0 8px;flex-wrap:wrap}
+.urlrow input{flex:1 1 260px;min-height:48px;padding:0 14px;border-radius:10px;border:1px solid var(--b);background:#0a0e20}
+.err{color:#ff9db0;min-height:1.4em;font-size:.95rem}
+.acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+.two{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));margin-top:28px}
+.two h3{font-size:1rem;margin-bottom:6px}
+.two p,.small{font-size:.92rem;color:var(--m)}
+.rc{display:flex;justify-content:space-between;gap:10px;width:100%;text-align:left;background:none;border:1px solid var(--b);border-radius:8px;padding:9px 12px;margin-top:8px;cursor:pointer;min-height:44px;overflow-wrap:anywhere}
+.warn{border-color:#7a5a1c;background:#1d1708;margin-top:16px}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr))}
+.critical{--c:var(--r)}.improve{--c:var(--a)}.good{--c:var(--g)}.none{--c:var(--m)}
+.bd{display:inline-flex;gap:5px;align-items:center;padding:3px 10px;border-radius:99px;font-size:.8rem;font-weight:600;color:var(--c);border:1px solid var(--c);white-space:nowrap}
+.dh{display:grid;gap:18px;grid-template-columns:1fr auto;align-items:center}
+.url{font-size:1.2rem;overflow-wrap:anywhere}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.stat{padding:8px 14px;border-radius:10px;border:1px solid var(--b);border-left:4px solid var(--c);min-width:120px}
+.stat b{font-size:1.4rem;display:block}
+.ring{position:relative;width:132px;height:132px}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring div{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.ring b{font-size:2rem;line-height:1}
+.note{display:inline-block;margin-top:12px;font-size:.85rem;color:var(--m);border:1px dashed var(--b);padding:6px 10px;border-radius:8px}
+h2.sec{font-size:1.5rem;margin:38px 0 12px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.chip{min-height:40px;padding:0 14px;border-radius:99px;border:1px solid var(--b);background:none;cursor:pointer}
+.chip[aria-pressed=true]{background:var(--v2);border-color:var(--v)}
+.top5{list-style:none;padding:0;margin:0;display:grid;gap:12px}
+.top5 li{display:grid;grid-template-columns:44px 1fr;gap:14px;border-color:#4b3b9a}
+.pn{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--v),var(--v2));display:grid;place-content:center;font-weight:700;font-size:1.2rem;color:#fff}
+dl{margin:10px 0 0}dt{font-size:.82rem;color:var(--m);margin-top:8px}dd{margin:0;overflow-wrap:anywhere}
+.cc .ch,.ih{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+.sc{display:flex;align-items:baseline;gap:4px;margin:10px 0}.sc b{font-size:1.6rem}
+.bar2{flex:1;height:6px;background:#0a0e20;border-radius:9px;margin-left:8px;overflow:hidden;align-self:center}.bar2 u{display:block;height:100%;background:var(--c)}
+details{margin:6px 0}summary{cursor:pointer;color:#c4b5fd;min-height:32px}
+.ck{padding:0;list-style:none;font-size:.9rem}.ck li{margin:8px 0}.ck span{color:var(--m);overflow-wrap:anywhere}
+.rec{font-size:.92rem;margin-top:8px}
+.issue{border-left:4px solid var(--c);margin-bottom:10px}
+.grp{font-size:1.05rem;margin:18px 0 8px}
+.form{display:grid;gap:14px}
+.form label{display:grid;gap:4px;font-size:.9rem;color:var(--m)}
+.form input,.form select,.form textarea{background:#0a0e20;border:1px solid var(--b);border-radius:8px;padding:10px;min-height:44px;width:100%}
+.form fieldset{border:1px solid var(--b);border-radius:14px;margin:0;display:grid;gap:10px;min-width:0}
+.form legend{font-weight:700;padding:0 6px}
+.tool{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.tool input{min-height:44px;padding:0 12px;border-radius:8px;border:1px solid var(--b);background:#0a0e20;flex:1 1 220px}
+.paper{background:#fff;color:#16192e;border-radius:12px;padding:34px;--m:#5a607e;--b:#d9dcec;--r:#c81e45;--a:#9a6000;--g:#0b7f56;overflow-wrap:anywhere}
+.paper h1{font-size:1.9rem;margin-bottom:6px}.paper h2{font-size:1.25rem;margin:26px 0 10px}
+.paper table{width:100%;border-collapse:collapse;font-size:.9rem}.paper th,.paper td{text-align:left;padding:8px;border-bottom:1px solid var(--b);vertical-align:top}
+.scroll{overflow-x:auto}
+.paper li{margin:8px 0}
+.disc{font-size:.85rem;color:var(--m);margin-top:18px}
+@media(max-width:640px){.dh{grid-template-columns:1fr}.paper{padding:18px}.top5 li{grid-template-columns:1fr}.btn{flex:1 1 100%}}
+@media print{body{background:#fff}.noprint{display:none!important}.paper{padding:0;border-radius:0}.view{padding:0}.paper section,.paper li{break-inside:avoid}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+</head>
+<body>
+<header class="top noprint"><div class="wrap bar">
+<a class="brand" href="#" data-go="home"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3M8 11l2 2 4-4"/></svg>Audit Desk</a>
+<nav aria-label="Main"><button data-go="home">URL Audit</button><button data-go="manual">Manual Audit</button><button id="navDemo">Demo</button></nav>
+</div></header>
+<main class="wrap">
+
+<section id="v-home" class="view">
+<div class="hero"><h1>Find where your landing page loses visitors</h1>
+<p>A heuristic conversion audit for founders, agencies, CRO consultants and freelancers. Review ten areas, see prioritised fixes and export a client-ready report.</p>
+<form id="f" class="urlrow" novalidate><label for="url" class="mut" style="width:100%">Landing page URL</label>
+<input id="url" type="text" inputmode="url" autocomplete="off" placeholder="https://example.com" aria-describedby="err">
+<button class="btn pri" id="run" type="submit">Run Audit</button></form>
+<p class="err" id="err" role="alert"></p>
+<div class="acts"><button class="btn" id="demo" type="button">View Demo Audit</button><button class="btn" data-go="manual" type="button">Start Manual Audit</button></div></div>
+<div id="blocked" class="card warn" hidden role="status"></div>
+<div class="two">
+<div class="card"><h3>How URL analysis works</h3><p>Your browser tries to download the page's public HTML and checks only what it finds in that text. Many sites block this (CORS and similar rules). When that happens no audit is produced, and you can use Manual Audit instead. The page is never rendered, so visual quality is not assessed.</p></div>
+<div class="card"><h3>Recent audits</h3><div id="recent"><p class="small">No audits yet in this browser. Try the demo.</p></div></div>
+</div>
+<p class="small" style="margin-top:18px">🔒 URL analysis is performed from your browser when technically possible. No backend database is used by this tool.</p>
+</section>
+
+<section id="v-manual" class="view" hidden>
+<h1 style="font-size:2rem">Manual Audit</h1>
+<p class="mut" style="margin:8px 0 20px;max-width:680px">Review the page yourself and rate each category. Works for any site, including ones the browser cannot fetch.</p>
+<form id="mf" class="form" novalidate>
+<div class="card form"><label>Client / project name<input id="mname" placeholder="Acme Inc."></label><label>Page URL (optional)<input id="murl" placeholder="https://example.com"></label></div>
+<div id="mcats" class="form"></div>
+<p class="err" id="merr" role="alert"></p>
+<div class="acts"><button class="btn pri" type="submit">Generate Audit</button></div>
+</form>
+</section>
+
+<section id="v-dash" class="view" hidden><div id="dash"></div></section>
+
+<section id="v-report" class="view" hidden>
+<div class="tool noprint"><button class="btn" data-go="dash">← Dashboard</button><input id="cname" aria-label="Client or project name" placeholder="Client / project name"><button class="btn pri" id="print">Print / Save as PDF</button></div>
+<article class="paper" id="rb"></article>
+</section>
+</main>
+
+<script>
+(function(){
+'use strict';
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const CATS=[['hero','Hero','Headline, value proposition, primary CTA'],['clarity','Clarity','Offer, audience and message clarity'],['cta','CTA','Presence, wording, consistency'],['value','Value Proposition','Benefit, differentiation, outcomes'],['trust','Trust','Credentials, guarantees, risk reduction'],['social','Social Proof','Testimonials, logos, case studies, results'],['offer','Offer','Offer and pricing clarity'],['friction','Friction','Forms, navigation, choices, missing info'],['mobile','Mobile','Viewport and structural indicators'],['read','Readability & Structure','Headings, text length, scanability']];
+const ST={critical:['🔴','Critical'],improve:['🟡','Needs Improvement'],good:['🟢','Good'],none:['⚪','Not enough evidence']};
+const WHY={hero:'Potential friction if visitors cannot tell quickly what the page offers.',clarity:'Could be unclear who the page is for or what is being offered.',cta:'Potential friction if the next step is hard to find or vaguely worded.',value:'Visitors may struggle to see the benefit or how this differs from alternatives.',trust:'Without reassurance, some visitors may hesitate to take the next step.',social:'Missing proof may leave claims feeling unverified.',offer:'An unclear offer or price can make the decision harder.',friction:'Extra fields, links or missing details can add effort before the main action.',mobile:'Missing mobile basics could make the page harder to use on small screens.',read:'Dense or poorly structured content can be hard to scan.'};
+const EASE={cta:10,hero:8,clarity:8,value:6,trust:6,social:4,offer:5,friction:7,mobile:9,read:5};
+const MAP={critical:25,improve:60,good:90};
+const st=s=>s==null?'none':s>=75?'good':s>=50?'improve':'critical';
+const badge=s=>`<span class="bd ${s}">${ST[s][0]} ${ST[s][1]}</span>`;
+let A=null,F={cat:'all',iss:'all'};
+
+/* ---------- views ---------- */
+function show(v){['home','manual','dash','report'].forEach(x=>$('#v-'+x).hidden=x!==v);
+ $$('nav [data-go]').forEach(b=>b.setAttribute('aria-current',b.dataset.go===v));window.scrollTo(0,0);}
+
+/* ---------- url ---------- */
+function parseUrl(v){v=v.trim();
+ const bad={err:'This does not look like a valid URL. Use a full address such as https://example.com.'};
+ if(!v)return{err:'Enter a URL to audit, for example https://example.com.'};
+ if(/^(javascript|data|mailto|tel|file|blob):/i.test(v)||(/^[a-z][a-z0-9+.-]*:\/\//i.test(v)&&!/^https?:\/\//i.test(v)))return{err:'Unsupported URL format. Only http:// and https:// pages can be audited.'};
+ if(/\s/.test(v))return bad;
+ let u;try{u=new URL(/^https?:\/\//i.test(v)?v:'https://'+v)}catch(e){return bad}
+ if(!u.hostname.includes('.')||u.hostname.endsWith('.'))return bad;
+ return{url:u.href};}
+
+/* ---------- scoring ---------- */
+const k=(l,p,e,f)=>[l,p,p===null?'Not enough detectable evidence'+(e?' ('+e+')':''):e,f];
+function mkCat(c,checks,thin){
+ if(thin&&c[0]!=='mobile')checks=checks.map(x=>[x[0],null,'Not enough detectable evidence (very little readable text in the returned HTML; the page may be rendered by JavaScript)',x[3]]);
+ const ev=checks.filter(x=>x[1]!==null),pass=ev.filter(x=>x[1]),fail=ev.filter(x=>!x[1]);
+ const score=ev.length?Math.round(pass.length/ev.length*100):null;
+ const shown=(fail.length?fail:pass).map(x=>x[2]).join('; ');
+ return{id:c[0],name:c[1],checks,score,status:st(score),hasEv:ev.length>0,
+  finding:score===null?'Not enough detectable evidence':fail.length?fail.map(x=>x[0]).join('; ')+' — '+(fail.length>1?'these checks were not met.':'this check was not met.'):'Detected signals support this area.',
+  evidence:shown||'Not enough detectable evidence',
+  rec:[...new Set(fail.map(x=>x[3]))].join(' ')||(score===null?'':'No change suggested from the detected evidence.')};}
+const overall=cs=>{const s=cs.filter(c=>c.score!==null);return s.length?Math.round(s.reduce((a,c)=>a+c.score,0)/s.length):null};
+
+function top5(cs){const sev={critical:2,improve:1};
+ return cs.filter(c=>sev[c.status]).map(c=>({c,w:sev[c.status]*100+(100-c.score)+c.checks.filter(x=>x[1]===false).length*5+(c.hasEv?10:0)+EASE[c.id]}))
+ .sort((a,b)=>b.w-a.w).slice(0,5).map((o,i)=>({n:i+1,cat:o.c.name,problem:o.c.finding,change:o.c.rec||'Review this area and define specific improvements.',reason:`${WHY[o.c.id]} Rated ${ST[o.c.status][1]} (${o.c.score}/100). Ranked by severity, available evidence and ease of implementation.`}));}
+
+/* ---------- html analysis (only detectable evidence) ---------- */
+const CTA=/\b(buy|get started|book|contact|sign up|start|request|learn more|try|demo|subscribe|download|order|join|schedule|get a quote)\b/i;
+function analyze(raw){
+ const d=new DOMParser().parseFromString(raw,'text/html');
+ d.querySelectorAll('script,style,noscript,template').forEach(n=>n.remove());
+ const body=d.body,T=(body.textContent||'').replace(/\s+/g,' ').trim(),L=T.toLowerCase(),thin=T.length<400;
+ const w=s=>s.trim().split(/\s+/).filter(Boolean).length,cl=e=>(e.textContent||e.value||'').replace(/\s+/g,' ').trim();
+ const all=(r)=>[...new Set(L.match(r)||[])],top=L.slice(0,700);
+ const h1=[...d.querySelectorAll('h1')],hs=[...d.querySelectorAll('h1,h2,h3,h4,h5,h6')],h1t=h1[0]?cl(h1[0]):'',h1w=w(h1t);
+ const cta=[...d.querySelectorAll('a,button,input[type=submit]')].filter(e=>{const t=cl(e);return t&&t.length<45&&CTA.test(t)});
+ const ctaT=[...new Set(cta.map(e=>cl(e).toLowerCase()))],bh=body.innerHTML;
+ const early=cta.some(e=>{const i=bh.indexOf(e.outerHTML);return i>=0&&i<bh.length*.3});
+ const forms=[...d.querySelectorAll('form')].map(f=>f.querySelectorAll('input:not([type=hidden]):not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]),select,textarea').length);
+ const maxF=Math.max(0,...forms),navL=d.querySelectorAll('nav a,header a').length;
+ const lv=hs.map(h=>+h.tagName[1]),skip=lv.some((x,i)=>i&&x-lv[i-1]>1);
+ const longP=[...d.querySelectorAll('p')].filter(p=>w(p.textContent)>120).length,words=w(T);
+ const vp=d.querySelector('meta[name=viewport]'),vc=vp?vp.getAttribute('content')||'':'';
+ const md=d.querySelector('meta[name=description]'),mdc=md?(md.getAttribute('content')||'').trim():'';
+ const OUT=/(save|grow|increase|reduce|faster|easier|without|improve|boost|simplif|automat|more )/;
+ const trust=all(/guarantee|money[- ]back|secure|trusted|certified|satisfaction|refund|cancel anytime|no credit card|gdpr/g);
+ const price=L.match(/[$€£৳]\s?\d[\d,.]*|\d+\s?(usd|eur|gbp)\b|\/\s?(mo|month|year)\b|per month/);
+ const offerW=all(/discount|% off|package|bundle|free trial|limited[- ]time|free consultation/g);
+ const sub=h1[0]&&h1[0].parentElement&&h1[0].parentElement.querySelector('p,h2');
+ const fixedW=/[^-a-z]width:\s*\d{4,}px/i.test(raw);
+ const defs=[
+ ['hero',[k('Single H1 headline present',h1.length>0,h1t?`H1: "${h1t.slice(0,100)}"`:'No <h1> found','Add one H1 that states the main outcome for the visitor.'),
+  k('Headline length (3–14 words)',h1w?h1w>=3&&h1w<=14:null,`${h1w} words`,'Tighten the headline to one clear idea.'),
+  k('Outcome wording near the top of the text',OUT.test(top),OUT.test(top)?'Outcome-type wording found in the first ~700 characters':'No outcome-type wording in the first ~700 characters','State the main benefit near the top of the page.'),
+  k('CTA early in the document',cta.length?early:false,!cta.length?'No CTA-like buttons or links detected':early?'CTA-like element found in the first 30% of page source (a proxy; layout was not rendered)':'First CTA-like element appears later in the page source','Place a primary CTA near the headline.')]],
+ ['clarity',[k('Subheadline or supporting line near H1',h1.length?!!sub:null,sub?'Supporting paragraph/heading found beside the H1':'No supporting text found beside the H1','Add a short subheadline explaining what the offer is and who it is for.'),
+  k('Meta description present',!!mdc,mdc?`"${mdc.slice(0,100)}"`:'No meta description found','Add a clear meta description summarising the offer.'),
+  k('Audience mentioned',/\bfor (\w+ ){0,2}(founders|teams|agencies|businesses|developers|marketers|startups|freelancers|owners|companies|creators|managers|stores)\b/.test(L),'Searched for “for <audience>” phrasing','Name the intended audience explicitly.'),
+  k('Headline is concise',h1w?h1w<=14:null,`${h1w} words`,'Shorten the headline.')]],
+ ['cta',[k('CTA-like elements present',cta.length>0,cta.length?`${cta.length} found, e.g. “${ctaT[0]}”`:'None detected','Add a clear primary call to action.'),
+  k('CTA wording is specific',ctaT.length?ctaT.some(t=>!/^(submit|click here|learn more|read more)$/.test(t)):null,`CTA texts: ${ctaT.slice(0,5).join(', ')}`,'Use action wording that says what happens next.'),
+  k('CTA repeated further down the page',cta.length>=2,`${cta.length} CTA-like elements`,'Repeat the primary CTA after key sections.'),
+  k('Limited number of distinct CTA labels (≤4)',ctaT.length?ctaT.length<=4:null,`${ctaT.length} distinct labels`,'Consider consolidating CTA wording around one primary action.')]],
+ ['value',[k('Outcome-focused wording',OUT.test(L),OUT.test(L)?'Outcome-type wording present':'No outcome-type wording found','Describe results visitors get, not only features.'),
+  k('Differentiation wording',/unlike|why (us|choose)|only |different|compared|versus|vs\./.test(L),'Searched for differentiation phrases','Consider explaining what sets the offer apart.'),
+  k('Benefit/how-it-works headings',hs.some(h=>/benefit|how it works|why|results|features/i.test(cl(h))),`${hs.length} headings inspected`,'Add headings that explain benefits and how it works.')]],
+ ['trust',[k('Trust-related terms present',trust.length>=2,trust.length?`Found: ${trust.join(', ')}`:'None found','Add trust signals such as certifications, security or privacy notes.'),
+  k('Guarantee / risk reduction wording',/guarantee|money[- ]back|refund|cancel anytime|no credit card|free trial/.test(L),'Searched for guarantee and refund wording','Consider stating a guarantee or other risk reducer.'),
+  k('Security / privacy mention',/secure|ssl|privacy|gdpr|encrypt/.test(L),'Searched for security and privacy wording','Consider mentioning how data is protected.')]],
+ ['social',[k('Testimonials or reviews',/testimonial|review|rating|stars|“|"[^"]{30,}"/.test(L),'Searched for testimonial/review wording','Consider adding named testimonials or reviews.'),
+  k('Client or customer mentions',/trusted by|our (clients|customers)|customers|clients/.test(L),'Searched for client/customer wording','Consider showing client logos or customer counts you can verify.'),
+  k('Case studies or results',/case stud|results|success stor/.test(L),'Searched for case study/results wording','Consider adding a case study with real outcomes.')]],
+ ['offer',[k('Pricing visible when applicable',price?true:null,price?`Pattern found: “${price[0]}”`:'No pricing pattern found (may be intentional)','Consider clarifying price or how pricing works.'),
+  k('Offer language (plans, packages, trials)',offerW.length>0,offerW.length?`Found: ${offerW.join(', ')}`:'None found','Describe what is included in the offer.'),
+  k('Offer headings present',hs.length>=3,`${hs.length} headings`,'Add headings that break the offer into clear parts.'),
+  k('CTA aligned with offer wording',cta.length?(!!price||offerW.length>0||ctaT.some(t=>/trial|demo|quote|book|start/.test(t))):null,`CTA labels: ${ctaT.slice(0,4).join(', ')}`,'Make the CTA label reflect the specific offer.')]],
+ ['friction',[k('Form size reasonable (≤5 fields)',forms.length?maxF<=5:null,forms.length?`${forms.length} form(s); largest has ${maxF} visible fields (a long form is only potential friction)`:'No forms detected','Consider asking for fewer fields up front.'),
+  k('Navigation links limited (≤8)',navL?navL<=8:null,`${navL} links in nav/header`,'Consider reducing navigation links that lead away from the CTA.'),
+  k('Few competing CTA labels (≤3)',ctaT.length?ctaT.length<=3:null,`${ctaT.length} distinct labels`,'Reduce competing choices around the main action.'),
+  k('Contact or FAQ info present',/faq|frequently asked|contact|@|phone/.test(L),'Searched for FAQ/contact wording','Add answers to common questions or contact details.')]],
+ ['mobile',[k('Viewport meta tag present',!!vp,vp?`content="${vc}"`:'No viewport meta tag','Add <meta name="viewport" content="width=device-width, initial-scale=1">.'),
+  k('Viewport not fixed-width',vp?!/width=\d+/.test(vc):null,vc||'n/a','Use width=device-width.'),
+  k('No very wide fixed widths in markup',!fixedW,fixedW?'A width of 1000px or more was found in CSS text':'None found in the returned HTML (external CSS not inspected)','Use fluid widths for layout containers.'),
+  k('Visual mobile quality',null,'page was not rendered','')]],
+ ['read',[k('Exactly one H1',h1.length===1,`${h1.length} H1 element(s)`,'Use one H1 and structure the rest with H2–H3.'),
+  k('Heading levels not skipped',hs.length?!skip:null,skip?'A heading level jump was found':'Heading levels follow in order','Keep heading levels in sequence.'),
+  k('No very long paragraphs (>120 words)',longP===0,`${longP} long paragraph(s)`,'Break long paragraphs into shorter blocks or lists.'),
+  k('Enough headings to scan (≥4)',hs.length>=4,`${hs.length} headings, ${words} words`,'Add headings to break up the content.')]]];
+ return{cats:defs.map(([id,ch])=>mkCat(CATS.find(c=>c[0]===id),ch,thin)),thin,words};}
+
+/* ---------- audit builders ---------- */
+const today=()=>new Date().toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'});
+function open(a){A=a;F={cat:'all',iss:'all'};renderDash();show('dash');}
+const DEMO=[['hero',45,'Headline is long and the primary CTA appears after several sections.','Sample: 19-word H1; first CTA after the fold.','Shorten the headline and place the primary CTA beside it.'],
+['clarity',70,'Offer is understandable but the audience is not named.','Sample: no “for <audience>” wording.','Name the intended audience in the subheadline.'],
+['cta',82,'CTA present and specific, repeated twice.','Sample: “Start free trial” appears 2 times.',''],
+['value',55,'Features dominate; outcomes are less visible.','Sample: few outcome words in headings.','Rewrite feature headings as outcomes.'],
+['trust',30,'No guarantee, security or privacy reassurance detected.','Sample: no trust terms found.','Add a guarantee and a short privacy note near the CTA.'],
+['social',62,'Testimonials exist but no named customers or case study.','Sample: 2 anonymous quotes.','Add named testimonials and one case study.'],
+['offer',null,'Not enough detectable evidence','Sample: pricing not present in source.',''],
+['friction',58,'Signup form has 7 fields and the header has 11 links.','Sample: 7 form fields; 11 nav links.','Reduce form fields and trim header navigation.'],
+['mobile',88,'Viewport tag present; no fixed-width markup found.','Sample: viewport width=device-width.',''],
+['read',90,'Clear heading order and short paragraphs.','Sample: 1 H1, 6 H2, no long paragraphs.','']];
+function demo(){open({demo:1,mode:'demo',name:'Sample SaaS Co. (illustrative)',url:'https://sample-landing-page.example (illustrative data)',date:today(),
+ cats:DEMO.map(([id,s,f,e,r])=>({id,name:CATS.find(c=>c[0]===id)[1],checks:[],score:s,status:st(s),hasEv:s!==null,finding:f,evidence:e,rec:r||(s===null?'':'No change suggested from the evidence.')}))});}
+
+function buildManual(){const cats=CATS.map(c=>{const s=$('#ms_'+c[0]).value,n=$('#mn_'+c[0]).value.trim(),e=$('#me_'+c[0]).value.trim(),r=$('#mr_'+c[0]).value.trim();
+ return{id:c[0],name:c[1],checks:[],score:MAP[s]===undefined?null:MAP[s],status:s,hasEv:!!e,finding:n||(s==='none'?'Not enough evidence':'Rated '+ST[s][1]+' by the auditor'),evidence:e||'No evidence entered',rec:r}});
+ if(cats.every(c=>c.status==='none')){$('#merr').textContent='Rate at least one category before generating the audit.';return}
+ $('#merr').textContent='';open({mode:'manual',name:$('#mname').value.trim()||'Untitled project',url:$('#murl').value.trim()||'Not provided',date:today(),cats});}
+
+/* ---------- rendering ---------- */
+const ring=s=>{const C=263.9;return`<div class="ring"><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="42" fill="none" stroke="#242c52" stroke-width="9"/><circle cx="50" cy="50" r="42" fill="none" stroke="var(--c)" stroke-width="9" stroke-linecap="round" stroke-dasharray="${(s||0)/100*C} ${C}"/></svg><div><b>${s===null?'—':s}</b><span class="small">/100</span></div></div>`};
+const chips=key=>['all','critical','improve','good','none'].map(v=>`<button type="button" class="chip" data-f="${key}:${v}" aria-pressed="${F[key]===v}">${v==='all'?'All':ST[v][0]+' '+ST[v][1]}</button>`).join('');
+const modeNote=()=>A.mode==='demo'?'Illustrative sample data — not a real website audit.':A.mode==='manual'?'Manual audit based on the auditor’s own observations.':'Heuristic audit of the HTML your browser could retrieve. The page was not rendered; no visual analysis was performed.';
+function renderDash(){const cs=A.cats,n=s=>cs.filter(c=>c.status===s).length,ov=overall(cs),os=st(ov);
+ $('#dash').innerHTML=`<div class="card dh ${os}"><div><p class="mut">Audited URL</p><h2 class="url">${esc(A.url)}</h2><p class="small">Audit date: ${esc(A.date)} · ${esc(A.name)}</p>
+ <div class="stats"><div class="stat critical"><b>${n('critical')}</b>🔴 Critical issues</div><div class="stat improve"><b>${n('improve')}</b>🟡 Improvements</div><div class="stat good"><b>${n('good')}</b>🟢 Good areas</div></div>
+ <span class="note">Heuristic conversion audit — scores are not scientific measurements or conversion predictions. ${esc(modeNote())}</span>
+ ${A.thin?'<p class="note">Very little readable text was returned (about '+A.words+' words); the page may be rendered by JavaScript, so most checks show “Not enough detectable evidence”.</p>':''}</div>
+ <div class="${os}" style="text-align:center">${ring(ov)}<p class="small">Overall score</p>${ov===null?'':badge(os)}</div></div>
+ <div class="acts noprint" style="margin-top:14px"><button class="btn pri" data-go="report">View Client Report</button><button class="btn" data-go="home" id="reset">New audit</button></div>
+ <h2 class="sec">Top 5 Changes To Make</h2><ol class="top5" id="t5"></ol>
+ <h2 class="sec">Category Scores</h2><div class="chips" id="cc"></div><div class="grid" id="cg"></div>
+ <h2 class="sec">Conversion Issues</h2><div class="chips" id="ic"></div><div id="ig"></div>
+ <p class="small" style="margin-top:24px">Scoring: each category score = detected checks passed ÷ checks with enough evidence (manual mode: Critical 25, Needs Improvement 60, Good 90). 75+ Good, 50–74 Needs Improvement, below 50 Critical. Overall = average of scored categories.</p>`;
+ const t=top5(cs);$('#t5').innerHTML=t.length?t.map(x=>`<li class="card"><div class="pn" aria-label="Priority ${x.n}">${x.n}</div><div><b>${esc(x.cat)}</b><dl><dt>Problem</dt><dd>${esc(x.problem)}</dd><dt>Recommended change</dt><dd>${esc(x.change)}</dd><dt>Reason</dt><dd>${esc(x.reason)}</dd></dl></div></li>`).join(''):'<li class="card">No critical or improvement areas were identified from the available evidence.</li>';
+ lists();}
+function lists(){const cs=A.cats;$('#cc').innerHTML=chips('cat');$('#ic').innerHTML=chips('iss');
+ const cf=cs.filter(c=>F.cat==='all'||c.status===F.cat);
+ $('#cg').innerHTML=cf.length?cf.map(c=>`<article class="card cc ${c.status}"><div class="ch"><h3>${esc(c.name)}</h3>${badge(c.status)}</div><div class="sc"><b>${c.score===null?'—':c.score}</b><span class="small">/100</span><i class="bar2"><u style="width:${c.score||0}%"></u></i></div><details><summary>Evidence</summary>${c.checks.length?`<ul class="ck">${c.checks.map(x=>`<li>${x[1]===true?'✅':x[1]===false?'⚠️':'➖'} <b>${esc(x[0])}</b><br><span>${esc(x[2])}</span></li>`).join('')}</ul>`:`<p class="small">${esc(c.evidence)}</p>`}</details><p class="rec"><b>Recommendation:</b> ${esc(c.rec||'—')}</p></article>`).join(''):'<p class="mut">No categories match this filter.</p>';
+ const g=['critical','improve','good','none'].filter(s=>F.iss==='all'||F.iss===s).map(s=>{const l=cs.filter(c=>c.status===s);
+  return l.length?`<h3 class="grp">${ST[s][0]} ${ST[s][1]} (${l.length})</h3>`+l.map(c=>`<article class="card issue ${s}"><div class="ih"><b>${esc(c.name)}</b>${badge(s)}</div><dl><dt>Finding</dt><dd>${esc(c.finding)}</dd><dt>Evidence</dt><dd>${esc(c.evidence)}</dd>${s==='critical'||s==='improve'?`<dt>Why it may create friction</dt><dd>${esc(WHY[c.id])}</dd>`:''}<dt>Suggested improvement</dt><dd>${esc(c.rec||'—')}</dd></dl></article>`).join(''):''}).join('');
+ $('#ig').innerHTML=g||'<p class="mut">No issues match this filter.</p>';}
+
+function renderReport(){const cs=A.cats,ov=overall(cs),t=top5(cs);
+ const sec=s=>{const l=cs.filter(c=>c.status===s);return`<section><h2>${ST[s][0]} ${s==='improve'?'Improvement Opportunities':s==='critical'?'Critical Issues':'Good Areas'}</h2>${l.length?`<ul>${l.map(c=>`<li><b>${esc(c.name)}</b> (${c.score}/100): ${esc(c.finding)}<br><span class="mut">Evidence: ${esc(c.evidence)}</span>${s!=='good'&&c.rec?`<br>Suggested improvement: ${esc(c.rec)}`:''}</li>`).join('')}</ul>`:'<p class="mut">None identified.</p>'}</section>`};
+ $('#rb').innerHTML=`<h1>Landing Page Conversion Audit</h1><p class="mut">${esc(modeNote())}</p>
+ <p style="margin-top:12px"><b>Client / project:</b> ${esc(A.name)}<br><b>Audited URL:</b> ${esc(A.url)}<br><b>Date:</b> ${esc(A.date)}<br><b>Overall score:</b> ${ov===null?'Not enough evidence':ov+'/100 ('+ST[st(ov)][1]+')'}</p>
+ <section><h2>Category Summary</h2><div class="scroll"><table><thead><tr><th>Category</th><th>Score</th><th>Status</th></tr></thead><tbody>${cs.map(c=>`<tr><td>${esc(c.name)}</td><td>${c.score===null?'—':c.score}</td><td>${ST[c.status][0]} ${ST[c.status][1]}</td></tr>`).join('')}</tbody></table></div></section>
+ ${sec('critical')}${sec('improve')}${sec('good')}
+ <section><h2>Top 5 Recommendations</h2>${t.length?`<ol>${t.map(x=>`<li><b>${esc(x.cat)}</b><br>Problem: ${esc(x.problem)}<br>Recommended change: ${esc(x.change)}<br>Reason: ${esc(x.reason)}</li>`).join('')}</ol>`:'<p class="mut">No priority changes identified.</p>'}</section>
+ <p class="disc">This is a heuristic conversion audit. Scores are indicative only and are not scientific measurements, guarantees or predictions of conversion results.</p>`;}
+
+/* ---------- recent ---------- */
+function recents(){try{return JSON.parse(localStorage.getItem('auditdesk.recent')||'[]')}catch(e){return[]}}
+function saveRecent(a){try{const l=recents().filter(x=>x.url!==a.url);l.unshift({url:a.url,date:a.date,score:overall(a.cats)});localStorage.setItem('auditdesk.recent',JSON.stringify(l.slice(0,4)))}catch(e){}drawRecent();}
+function drawRecent(){const l=recents();$('#recent').innerHTML=l.length?l.map(x=>`<button class="rc" type="button" data-url="${esc(x.url)}"><span>${esc(x.url)}</span><span class="mut">${x.score===null?'—':x.score+'/100'} · ${esc(x.date)}</span></button>`).join('')+'<p class="small" style="margin-top:8px">Stored only in this browser. Selecting one re-fills the URL; run it again to re-audit.</p>':'<p class="small">No audits yet in this browser. Try the demo.</p>';}
+
+/* ---------- run ---------- */
+function blocked(url,why){const b=$('#blocked');b.hidden=false;
+ b.innerHTML=`<h3>This page could not be analysed from the browser</h3><p style="margin:8px 0">${esc(why)}</p><p class="small">Websites often prevent other origins from reading their HTML (CORS), or the site may be offline or blocking requests. No audit was produced and nothing has been assumed about this page. You can still audit it by hand.</p><div class="acts"><button class="btn pri" id="toManual" type="button">Use Manual Audit instead</button></div>`;
+ $('#toManual').onclick=()=>{$('#murl').value=url;show('manual')};}
+async function run(e){e.preventDefault();const r=parseUrl($('#url').value),err=$('#err'),btn=$('#run');$('#blocked').hidden=true;
+ if(r.err){err.textContent=r.err;return}err.textContent='';btn.disabled=true;btn.textContent='Fetching page…';
+ try{const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),12000);
+  const res=await fetch(r.url,{signal:ctl.signal});clearTimeout(tm);
+  if(!res.ok)throw new Error('The server responded with HTTP '+res.status+'.');
+  if(!/html|xml/i.test(res.headers.get('content-type')||''))throw new Error('The response was not an HTML document.');
+  const html=(await res.text()).slice(0,3000000),an=analyze(html);
+  const a={mode:'auto',name:new URL(r.url).hostname,url:r.url,date:today(),cats:an.cats,thin:an.thin,words:an.words};saveRecent(a);open(a);
+ }catch(x){blocked(r.url,x&&x.name==='AbortError'?'The request timed out after 12 seconds.':(x&&x.message&&/HTTP|HTML/.test(x.message))?x.message:'The browser blocked or could not complete the request (typically a CORS or network restriction).')}
+ finally{btn.disabled=false;btn.textContent='Run Audit'}}
+
+/* ---------- init ---------- */
+$('#mcats').innerHTML=CATS.map(c=>`<fieldset class="card"><legend>${esc(c[1])}</legend><p class="small">${esc(c[2])}</p>
+<label>Status<select id="ms_${c[0]}"><option value="none">⚪ Not enough evidence</option><option value="critical">🔴 Critical</option><option value="improve">🟡 Needs Improvement</option><option value="good">🟢 Good</option></select></label>
+<label>Notes<textarea id="mn_${c[0]}" rows="2"></textarea></label><label>Evidence<textarea id="me_${c[0]}" rows="2"></textarea></label><label>Recommendation<textarea id="mr_${c[0]}" rows="2"></textarea></label></fieldset>`).join('');
+$('#f').addEventListener('submit',run);
+$('#mf').addEventListener('submit',e=>{e.preventDefault();buildManual()});
+$('#demo').onclick=$('#navDemo').onclick=demo;
+$('#print').onclick=()=>window.print();
+$('#cname').addEventListener('input',e=>{A.name=e.target.value.trim()||'Client';renderReport()});
+document.addEventListener('click',e=>{
+ const g=e.target.closest('[data-go]');
+ if(g){e.preventDefault();const v=g.dataset.go;
+  if(v==='report'){renderReport();$('#cname').value=A.name;show('report')}
+  else if(v==='dash'){show('dash')}
+  else{if(g.id==='reset')A=null;show(v)}return}
+ const f=e.target.closest('[data-f]');if(f&&A){const[kk,v]=f.dataset.f.split(':');F[kk]=v;lists();return}
+ const rc=e.target.closest('[data-url]');if(rc){$('#url').value=rc.dataset.url;$('#url').focus()}});
+drawRecent();show('home');
+})();
+</script>
+</body>
+</html>
